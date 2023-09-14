@@ -911,7 +911,7 @@ export class PlotView extends LayoutDOMView implements Renderable {
       overlays.prepare()
       this._paint_levels(overlays.ctx, "overlay", frame_box, false)
       if (settings.wireframe)
-        this._paint_layout(overlays.ctx, this.layout)
+        this.paint_layout(overlays.ctx, this.layout)
       overlays.finish()
     }
 
@@ -945,7 +945,7 @@ export class PlotView extends LayoutDOMView implements Renderable {
     }
   }
 
-  protected _paint_layout(ctx: Context2d, layout: Layoutable) {
+  paint_layout(ctx: Context2d, layout: Layoutable) {
     const {x, y, width, height} = layout.bbox
     ctx.strokeStyle = "blue"
     ctx.strokeRect(x, y, width, height)
@@ -953,7 +953,7 @@ export class PlotView extends LayoutDOMView implements Renderable {
       ctx.save()
       if (!layout.absolute)
         ctx.translate(x, y)
-      this._paint_layout(ctx, child)
+      this.paint_layout(ctx, child)
       ctx.restore()
     }
   }
