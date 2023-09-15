@@ -100,7 +100,6 @@ from .glyphs import (
     LRTBGlyph,
     MultiLine,
     Patches,
-    Rect,
     VStrip,
     XYGlyph,
 )
@@ -1545,7 +1544,7 @@ class BoxEditTool(EditTool, Drag, Tap):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
-    renderers = List(GlyphRendererOf(Rect, LRTBGlyph, HStrip, VStrip), help="""
+    renderers = List(GlyphRendererOf(LRTBGlyph, HStrip, VStrip, XYGlyph), help="""
     A list of renderers corresponding to glyphs that may be edited.
     """)
 
