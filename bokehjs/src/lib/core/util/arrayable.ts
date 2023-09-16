@@ -245,38 +245,38 @@ export function minmax2(arr: Arrayable<number>, brr: Arrayable<number>): [number
   return [a_min, a_max, b_min, b_max]
 }
 
-export function min_by<T>(array: Arrayable<T>, key: (item: T) => number): T {
+export function min_by<T>(array: Arrayable<T>, key: (item: T, i: number) => number): T {
   if (array.length == 0)
     throw new Error("min_by() called with an empty array")
 
   let result = array[0]
-  let resultComputed = key(result)
+  let result_computed = key(result, 0)
 
   for (let i = 1, length = array.length; i < length; i++) {
     const value = array[i]
-    const computed = key(value)
-    if (computed < resultComputed) {
+    const computed = key(value, i)
+    if (computed < result_computed) {
       result = value
-      resultComputed = computed
+      result_computed = computed
     }
   }
 
   return result
 }
 
-export function max_by<T>(array: Arrayable<T>, key: (item: T) => number): T {
+export function max_by<T>(array: Arrayable<T>, key: (item: T, i: number) => number): T {
   if (array.length == 0)
     throw new Error("max_by() called with an empty array")
 
   let result = array[0]
-  let resultComputed = key(result)
+  let result_computed = key(result, 0)
 
   for (let i = 1, length = array.length; i < length; i++) {
     const value = array[i]
-    const computed = key(value)
-    if (computed > resultComputed) {
+    const computed = key(value, i)
+    if (computed > result_computed) {
       result = value
-      resultComputed = computed
+      result_computed = computed
     }
   }
 

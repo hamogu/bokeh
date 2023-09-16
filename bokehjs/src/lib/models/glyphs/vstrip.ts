@@ -10,7 +10,7 @@ import type * as visuals from "core/visuals"
 import * as uniforms from "core/uniforms"
 import type {Context2d} from "core/util/canvas"
 import type {SpatialIndex} from "core/util/spatial"
-import {map} from "core/util/arrayable"
+import {map, max_by} from "core/util/arrayable"
 import {range} from "core/util/array"
 import * as p from "core/properties"
 import type {LRTBGL} from "./webgl/lrtb"
@@ -24,6 +24,7 @@ export type VStripData = GlyphData & p.UniformsOf<VStrip.Mixins> & {
   sx0: ScreenArray
   sx1: ScreenArray
 
+  max_width: number
   max_line_width: number
 }
 
@@ -68,6 +69,15 @@ export class VStripView extends GlyphView {
     const sbottom = new ScreenArray(n)
     sbottom.fill(bottom)
     return sbottom
+  }
+
+  protected override _set_data(indices: number[] | null): void {
+    super._set_data(indices)
+
+    const {abs} = Math
+    const {_x0, _x1} = this
+    const max_width = max_by(_x0, (x0_i, i) => abs(x0_i - _x1[i]))
+    this.max_width = max_width
   }
 
   override after_visuals(): void {
@@ -130,8 +140,10 @@ export class VStripView extends GlyphView {
   }
 
   protected _get_candidates(sx0: number, sx1?: number): Iterable<number> {
-    const {max_line_width} = this
-    const [x0, x1] = this.renderer.xscale.r_invert(sx0 - max_line_width, (sx1 ?? sx0) + max_line_width)
+    const {max_width} = this
+    const [dx0, dx1] = this.renderer.xscale.r_invert(sx0, sx1 ?? sx0)
+    const x0 = dx0 - max_width
+    const x1 = dx1 + max_width
     return this.index.indices({x0, x1, y0: 0, y1: 0})
   }
 
