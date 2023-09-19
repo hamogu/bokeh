@@ -22,8 +22,12 @@ import {LinearScale} from "../scales/linear_scale"
 import {CoordinateTransform} from "../coordinates/coordinate_mapping"
 import {build_view} from "core/build_views"
 import {clamp} from "core/util/math"
+import {Enum} from "../../core/kinds"
 
 const {round} = Math
+
+const LengthSizing = Enum("adaptive", "exact")
+type LengthSizing = typeof LengthSizing["__type__"]
 
 class TextLayout extends ContentLayoutable {
 
@@ -466,6 +470,7 @@ export namespace ScaleBar {
     dimensional: p.Property<Dimensional>
     orientation: p.Property<Orientation>
     bar_length: p.Property<number>
+    length_sizing: p.Property<LengthSizing>
     location: p.Property<Anchor>
     label_align: p.Property<Align>
     label_location: p.Property<Location>
@@ -525,6 +530,7 @@ export class ScaleBar extends Annotation {
       dimensional:    [ Ref(Dimensional), () => new MetricLength() ],
       orientation:    [ Orientation, "horizontal" ],
       bar_length:     [ NonNegative(Number), 0.2 ],
+      length_sizing:  [ LengthSizing, "adaptive" ],
       location:       [ Anchor, "top_right" ],
       label_align:    [ Align, "center" ],
       label_location: [ Location, "below" ],
