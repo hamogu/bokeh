@@ -20,6 +20,9 @@ log = logging.getLogger(__name__)
 # Imports
 #-----------------------------------------------------------------------------
 
+# Standard library imports
+from typing import Any
+
 # Bokeh imports
 from ...core.enums import CoordinateUnits, Dimension
 from ...core.properties import (
@@ -35,8 +38,13 @@ from ...core.properties import (
     Override,
     Seq,
 )
+from ...core.property.singletons import Undefined
 from ...core.property_aliases import BorderRadius
 from ...core.property_mixins import ScalarFillProps, ScalarHatchProps, ScalarLineProps
+from ...util.deprecation import deprecated
+from .. import glyphs
+from ..renderers import GlyphRenderer, Renderer
+from ..sources import ColumnDataSource
 from .annotation import Annotation
 
 #-----------------------------------------------------------------------------
@@ -44,10 +52,12 @@ from .annotation import Annotation
 #-----------------------------------------------------------------------------
 
 __all__ = (
+    "LegacyBand",
     "BoxAnnotation",
     "PolyAnnotation",
     "Slope",
     "Span",
+    "LegacyWhisker",
 )
 
 #-----------------------------------------------------------------------------
@@ -336,6 +346,54 @@ class Span(Annotation):
 
     hover_line_color = Override(default=None)
     hover_line_alpha = Override(default=0.3)
+
+#-----------------------------------------------------------------------------
+# Legacy API
+#-----------------------------------------------------------------------------
+
+def LegacyBand(**kwargs: Any) -> GlyphRenderer:
+    """ Render a filled area band along a dimension.
+
+    """
+    deprecated((3, 3, 0), "bokeh.annotations.Band", "bokeh.glyphs.Band or figure.band()")
+
+    defaults = dict(level="annotation")
+    glyph_renderer_kwargs = {}
+
+    for name in Renderer.properties():
+        default = defaults.get(name, Undefined)
+        value = kwargs.pop(name, default)
+        glyph_renderer_kwargs[name] = value
+
+    data_source = kwargs.pop("source", Undefined)
+    if data_source is Undefined:
+        data_source = ColumnDataSource()
+
+    glyph = glyphs.Band(**kwargs)
+
+    return GlyphRenderer(data_source=data_source, glyph=glyph, **glyph_renderer_kwargs)
+
+def LegacyWhisker(**kwargs: Any) -> GlyphRenderer:
+    """ Render whiskers along a dimension.
+
+    """
+    deprecated((3, 3, 0), "bokeh.annotations.Whisker", "bokeh.glyphs.Whisker or figure.whisker()")
+
+    defaults = dict(level="annotation")
+    glyph_renderer_kwargs = {}
+
+    for name in Renderer.properties():
+        default = defaults.get(name, Undefined)
+        value = kwargs.pop(name, default)
+        glyph_renderer_kwargs[name] = value
+
+    data_source = kwargs.pop("source", Undefined)
+    if data_source is Undefined:
+        data_source = ColumnDataSource()
+
+    glyph = glyphs.Whisker(**kwargs)
+
+    return GlyphRenderer(data_source=data_source, glyph=glyph, **glyph_renderer_kwargs)
 
 #-----------------------------------------------------------------------------
 # Dev API
